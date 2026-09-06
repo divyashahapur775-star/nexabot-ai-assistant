@@ -1,0 +1,6 @@
+{
+  "name": "NexaBot AI",
+  "description": "An intelligent AI assistant and AI & Data Science internship platform featuring 6 specialized AI capabilities, interactive chat, and dark/light themes.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
