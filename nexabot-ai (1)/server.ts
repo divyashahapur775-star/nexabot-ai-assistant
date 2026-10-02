@@ -229,7 +229,6 @@ async function startServer() {
   // Multi-Modal AI Assistant Pipeline Endpoints (Task 5)
   // -------------------------------------------------------------
 
-  // Master Multimodal Reasoning Pipeline endpoint
   app.post("/api/multimodal/pipeline", async (req, res) => {
     try {
       const { query, prompt, text, images, attachments, sessionId } = req.body || {};
@@ -273,7 +272,6 @@ async function startServer() {
     }
   });
 
-  // Direct Image Analysis endpoint
   app.post("/api/multimodal/analyze", async (req, res) => {
     try {
       const { image, base64Data, mimeType, name, userQueryHint } = req.body || {};
@@ -291,7 +289,6 @@ async function startServer() {
     }
   });
 
-  // Multimodal Session Memory Context endpoint
   app.get("/api/multimodal/context/:sessionId", (req, res) => {
     try {
       const { sessionId } = req.params;
@@ -309,7 +306,6 @@ async function startServer() {
     }
   });
 
-  // Clear Multimodal Session Memory endpoint
   app.post("/api/multimodal/clear-context", (req, res) => {
     try {
       const { sessionId } = req.body || {};
@@ -322,7 +318,6 @@ async function startServer() {
     }
   });
 
-  // Dedicated Sentiment Analysis API Endpoint
   app.post("/api/sentiment/analyze", (req, res) => {
     try {
       const { text, sessionId } = req.body;
@@ -337,12 +332,9 @@ async function startServer() {
     }
   });
 
-  // Evaluation Endpoint for benchmarking sentiment accuracy & metrics against ground truth
   app.post("/api/sentiment/evaluate", (req, res) => {
     try {
       const { testDataset } = req.body;
-      
-      // Default benchmark test set if not provided
       const dataset: Array<{ text: string; label: SentimentLabel }> = Array.isArray(testDataset) && testDataset.length > 0
         ? testDataset
         : [
@@ -365,7 +357,6 @@ async function startServer() {
     }
   });
 
-  // Sentiment Telemetry & CSAT Proxy Metrics Endpoint
   app.get("/api/sentiment/metrics", (req, res) => {
     try {
       const metrics = getSentimentTelemetrySummary();
@@ -376,7 +367,6 @@ async function startServer() {
     }
   });
 
-  // Dedicated MedQuAD Medical Q&A and NER API Endpoint
   app.post("/api/medquad/qa", (req, res) => {
     try {
       const { question } = req.body;
@@ -391,7 +381,6 @@ async function startServer() {
     }
   });
 
-  // Dedicated Medical Named Entity Recognition (NER) Endpoint
   app.post("/api/medquad/ner", (req, res) => {
     try {
       const { text } = req.body;
@@ -406,7 +395,6 @@ async function startServer() {
     }
   });
 
-  // MedQuAD Benchmark Evaluation Endpoint
   app.get("/api/medquad/evaluate", (req, res) => {
     try {
       const evaluation = evaluateMedQuADEngine();
@@ -417,11 +405,6 @@ async function startServer() {
     }
   });
 
-  // -------------------------------------------------------------
-  // arXiv cs.CL Domain-Expert Chatbot API Endpoints
-  // -------------------------------------------------------------
-
-  // arXiv cs.CL Expert Chat Query
   app.post("/api/arxiv/ask", (req, res) => {
     try {
       const { query, sessionId } = req.body;
@@ -436,7 +419,6 @@ async function startServer() {
     }
   });
 
-  // List indexed cs.CL papers
   app.get("/api/arxiv/papers", (req, res) => {
     try {
       const papers = loadCsclCorpus();
@@ -447,7 +429,6 @@ async function startServer() {
     }
   });
 
-  // Summarize specific arXiv paper
   app.get("/api/arxiv/paper/:id/summary", (req, res) => {
     try {
       const paperId = req.params.id;
@@ -464,7 +445,6 @@ async function startServer() {
     }
   });
 
-  // Bulk Ingest and Index all 310 arXiv cs.CL papers into Knowledge Base
   app.post("/api/arxiv/sync-all", async (req, res) => {
     try {
       const result = await seedArxivCsclToFirestoreAndVectors();
@@ -480,7 +460,6 @@ async function startServer() {
     }
   });
 
-  // Real Ingestion from arXiv's Public API XML Endpoint into Firestore
   app.post("/api/arxiv/ingest-live", async (req, res) => {
     try {
       const { maxResults } = req.body || {};
@@ -493,7 +472,6 @@ async function startServer() {
     }
   });
 
-  // Get Live Ingested Inventory
   app.get("/api/arxiv/live-inventory", (req, res) => {
     try {
       const papers = getLiveIngestedPapers();
@@ -507,11 +485,6 @@ async function startServer() {
     }
   });
 
-  // -------------------------------------------------------------
-  // Dynamic Knowledge Base Vector Engine API Endpoints (Task 3)
-  // -------------------------------------------------------------
-
-  // Vector Search Query Endpoint
   app.post("/api/knowledge/query", (req, res) => {
     try {
       const { query, topK, minSimilarity } = req.body;
@@ -526,7 +499,6 @@ async function startServer() {
     }
   });
 
-  // Manual or Webhook Ingestion Endpoint for Custom Documents
   app.post("/api/knowledge/ingest", (req, res) => {
     try {
       const { sourceId, documents } = req.body;
@@ -541,7 +513,6 @@ async function startServer() {
     }
   });
 
-  // Trigger Instant Sync on Specific Data Source
   app.post("/api/knowledge/sync/:sourceId", (req, res) => {
     try {
       const { sourceId } = req.params;
@@ -553,7 +524,6 @@ async function startServer() {
     }
   });
 
-  // Trigger Sync for All Configured Sources
   app.post("/api/knowledge/sync-all", (req, res) => {
     try {
       const results = runAllEnabledSourcesIngestion();
@@ -564,7 +534,6 @@ async function startServer() {
     }
   });
 
-  // Get Knowledge Base Telemetry & Growth Metrics
   app.get("/api/knowledge/telemetry", (req, res) => {
     try {
       const telemetry = getKnowledgeBaseTelemetry();
@@ -575,7 +544,6 @@ async function startServer() {
     }
   });
 
-  // Get Configured Data Sources List
   app.get("/api/knowledge/sources", (req, res) => {
     try {
       const sources = getDataSourceConfigs();
@@ -586,7 +554,6 @@ async function startServer() {
     }
   });
 
-  // Update Source Configuration (Enable/Disable, Interval change)
   app.patch("/api/knowledge/sources/:sourceId", (req, res) => {
     try {
       const { sourceId } = req.params;
@@ -598,11 +565,6 @@ async function startServer() {
     }
   });
 
-  // -------------------------------------------------------------
-  // Persistent Firestore Knowledge Base Endpoints
-  // -------------------------------------------------------------
-
-  // Add or update knowledge document in Firestore
   app.post("/api/firestore-knowledge/add", async (req, res) => {
     try {
       const { text, sourceId, metadata } = req.body;
@@ -618,7 +580,6 @@ async function startServer() {
     }
   });
 
-  // Query knowledge stored across sessions in Firestore
   app.post("/api/firestore-knowledge/query", async (req, res) => {
     try {
       const { question, topK } = req.body;
@@ -634,7 +595,6 @@ async function startServer() {
     }
   });
 
-  // Get all documents stored in Firestore knowledge base
   app.get("/api/firestore-knowledge/all", async (req, res) => {
     try {
       const items = await getAllStoredKnowledge();
@@ -645,7 +605,6 @@ async function startServer() {
     }
   });
 
-  // Delete a document from Firestore
   app.delete("/api/firestore-knowledge/:docId", async (req, res) => {
     try {
       const { docId } = req.params;
@@ -657,11 +616,6 @@ async function startServer() {
     }
   });
 
-  // -------------------------------------------------------------
-  // Automated External Source Scheduler Endpoints
-  // -------------------------------------------------------------
-
-  // Get status of background scheduler, registered external sources, and audit logs
   app.get("/api/scheduler/status", (req, res) => {
     try {
       const status = getSchedulerStatus();
@@ -672,7 +626,6 @@ async function startServer() {
     }
   });
 
-  // Manually trigger immediate synchronization of all external sources to Firestore
   app.post("/api/scheduler/sync", async (req, res) => {
     try {
       const { sourceId } = req.body || {};
@@ -693,7 +646,6 @@ async function startServer() {
     }
   });
 
-  // Add a new external data source (URL, API, directory, or feed)
   app.post("/api/scheduler/sources", (req, res) => {
     try {
       const { name, type, endpointUrlOrPath, pollIntervalMs } = req.body;
@@ -713,7 +665,6 @@ async function startServer() {
     }
   });
 
-  // Update an external source configuration
   app.patch("/api/scheduler/sources/:sourceId", (req, res) => {
     try {
       const { sourceId } = req.params;
@@ -725,7 +676,6 @@ async function startServer() {
     }
   });
 
-  // Delete an external source
   app.delete("/api/scheduler/sources/:sourceId", (req, res) => {
     try {
       const { sourceId } = req.params;
@@ -748,7 +698,7 @@ async function startServer() {
       const latestUserMessage = messages[messages.length - 1].content;
       const activeSessionId = sessionId || `session_${Date.now()}`;
 
-      // 1. Run Real-time Sentiment Detection & Adaptation Logic with multi-turn message history & active crisis
+      // 1. Run Real-time Sentiment Detection & Adaptation Logic
       const session = getSessionContext(activeSessionId);
       const activeCrisis = session.activeCrisis || getActiveSessionCrisis(activeSessionId);
       const crisisContext: EmotionalCrisisContext = {
@@ -761,7 +711,6 @@ async function startServer() {
 
       console.log(`[Sentiment Output] Message: "${latestUserMessage.substring(0, 50)}..." | Label: ${sentiment.label} | Confidence: ${sentiment.confidencePercentage}%`);
 
-      // Check if user message or ongoing multi-turn context is an emotional or personal crisis FIRST (isolated from medical-qa)
       const isMedicalQA = taskType === "medical-qa";
       const emotionalCrisis = isMedicalQA 
         ? { isPersonalCrisis: false, isUrgent: false, crisisType: null, detectedEmotion: null, isFollowUpAdvice: false } 
@@ -778,10 +727,8 @@ async function startServer() {
         session.lastIntent = 'emotional_support';
       }
 
-      // Check if this is an explicit knowledge base storage command or arXiv paper inspection
       const isExplicitKnowledgeIntent = /arxiv|cs\.cl|paper|dataset/i.test(latestUserMessage) || (!emotionalCrisis.isPersonalCrisis && (taskType === "domain-expert" || taskType === "knowledge-base"));
       
-      // Multilingual Turn & Slot Engine: handles flight bookings, slot fills, affirmative/negative ambiguous replies, emotional crises, and language switches
       if (!isMedicalQA && (!isExplicitKnowledgeIntent || emotionalCrisis.isPersonalCrisis)) {
         const turnResult = processMultilingualTurn(activeSessionId, latestUserMessage, language, taskType);
         if (turnResult.handled) {
@@ -800,8 +747,6 @@ async function startServer() {
         }
       }
 
-      // 0. Handle natural language and commands for storing/adding knowledge to Firestore:
-      // Examples: "store this fact: ...", "remember this: ...", "update knowledge: ...", "add knowledge: ...", "save to knowledge base: ..."
       const addKnowledgeMatch = latestUserMessage.match(
         /^(?:please\s+)?(?:store\s+(?:this\s+)?(?:fact|info|information|knowledge|data)?|remember\s+(?:this\s+)?(?:fact|info|information)?|save\s+(?:this\s+)?(?:to\s+)?(?:the\s+)?(?:persistent\s+)?(?:knowledge\s+base|kb|database)?|add\s+(?:to\s+)?(?:the\s+)?(?:persistent\s+)?(?:knowledge\s+base|kb|knowledge)?|update\s+(?:the\s+)?(?:persistent\s+)?(?:knowledge\s+base|kb|knowledge)?)(?:\s*\[([^\]]+)\]|\s*:\s*(.+)|[\s\n]+(.+))$/is
       );
@@ -823,7 +768,6 @@ async function startServer() {
         }
       }
 
-      // Handle queries asking for document count, list of papers, dataset contents, or write operation confirmation
       const isCountIntent = /(?:exact\s+)?(?:total\s+)?(?:document\s+count|doc\s+count|paper\s+count|number\s+of\s+documents|number\s+of\s+papers|how\s+many\s+(?:documents|papers)|count\s+in\s+firestore)/i.test(latestUserMessage);
       const isWriteConfirmIntent = /(?:written\s+via|real\s+database\s+write|dynamically\s+without\s+writing|generating\s+this\s+response\s+dynamically|confirm\s*:?\s*were\s+these\s+written)/i.test(latestUserMessage);
       const isListPapersIntent = /(?:list|show|get|display|what\s+are)\s+(?:every|all|the)?\s*(?:single)?\s*(?:arxiv\s+paper|arxiv\s+papers|cs\.cl\s+papers|arxiv\s+dataset)|list\s+arxiv|show\s+all\s+arxiv\s+papers|paper\s+inventory|dataset\s+inventory|first\s+10\s+arxiv/i.test(latestUserMessage);
@@ -832,10 +776,9 @@ async function startServer() {
         const livePapers = await getLiveFirestorePapers(50);
         const count = await getLiveFirestoreDocCount();
 
-        // If asking for write confirmation
         if (isWriteConfirmIntent) {
           return res.json({
-            reply: `✅ **Confirmation of Database Write Operation:**\n\n- **Write Method:** Real database write operation (\`setDoc\` from Firebase Firestore SDK)\n- **Target Collection:** \`knowledge_base\`\n- **Target Firestore Database:** \`ai-studio-nexabotai-95f8c032-3519-40f4-b904-b4503a43cf76\`\n- **Permanent Storage Status:** Yes, every document was permanently written to Firestore with title, abstract, authors, arXiv ID, published date, and searchable metadata — **NOT** generated dynamically or held only in conversation memory.\n- **Current Live Document Count in Firestore:** **${count} documents**`,
+            reply: `✅ **Confirmation of Database Write Operation:**\n\n- **Write Method:** Real database write operation (\`setDoc\` from Firebase Firestore SDK)\n- **Target Collection:** \`knowledge_base\`\n- **Target Firestore Database:** \`ai-studio-nexabotai-95f8c032-3519-40f4-b904-b4503a43cf76\`\n- **Permanent Storage Status:** Yes, every document was permanently written to Firestore with title, abstract, authors, arXiv ID, published date, and searchable metadata.\n- **Current Live Document Count in Firestore:** **${count} documents**`,
             taskType: taskType || "domain-expert",
             source: "firestore-knowledge-verification",
             sentiment,
@@ -845,7 +788,6 @@ async function startServer() {
           });
         }
 
-        // If asking strictly for exact total document count
         if (isCountIntent && !/first\s+10/i.test(latestUserMessage) && !/list/i.test(latestUserMessage)) {
           return res.json({
             reply: `📊 **Exact Total Document Count in Firestore:**\n\n- **Total Documents in \`knowledge_base\`:** **${count} documents**\n- **Collection:** \`knowledge_base\`\n- **Firestore Instance:** \`ai-studio-nexabotai-95f8c032-3519-40f4-b904-b4503a43cf76\`\n- **Data Origin:** Real papers ingested directly from arXiv's public API XML feed (category: \`cat:cs.CL\`)`,
@@ -873,7 +815,6 @@ async function startServer() {
           });
         }
 
-        // If asking for first 10 papers
         if (/first\s+10/i.test(latestUserMessage)) {
           const first10Str = livePapers.slice(0, 10).map((p, idx) => `${idx + 1}. **${p.title}** (arXiv ID: \`${p.arxivId}\`, URL: https://arxiv.org/abs/${p.arxivId})`).join("\n");
 
@@ -891,7 +832,7 @@ async function startServer() {
         const sampleList = livePapers.slice(0, 20).map((p, idx) => `${idx + 1}. **[arXiv:${p.arxivId}]** *${p.title}* (${p.publishedDate.slice(0, 10)}) - https://arxiv.org/abs/${p.arxivId}`).join("\n");
 
         return res.json({
-          reply: `📚 **Verified arXiv cs.CL Knowledge Base Status & Inventory**\n\n- **Exact Total Document Count in Firestore:** **${count} papers**\n- **Database Write Method:** Written via real permanent database write operations (\`setDoc\`) to Firestore collection \`knowledge_base\` in project database \`ai-studio-nexabotai-95f8c032-3519-40f4-b904-b4503a43cf76\`.\n- **Dataset Source:** Real-time Cornell University arXiv API XML feed (\`http://export.arxiv.org/api/query?search_query=cat:cs.CL\`)\n- **Indexing & Retrieval:** Permanent Firestore storage + BM25 & Dense vector embedding indexing.\n\n### Stored Papers in Firestore (First 20 of ${count}):\n${sampleList}\n\n*(Every paper is verified against arXiv's public repository at \`https://arxiv.org/abs/[ID]\`)*`,
+          reply: `📚 **Verified arXiv cs.CL Knowledge Base Status & Inventory**\n\n- **Exact Total Document Count in Firestore:** **${count} papers**\n- **Database Write Method:** Written via real permanent database write operations (\`setDoc\`) to Firestore collection \`knowledge_base\` in project database \`ai-studio-nexabotai-95f8c032-3519-40f4-b904-b4503a43cf76\`.\n- **Dataset Source:** Real-time Cornell University arXiv API XML feed (\`http://export.arxiv.org/api/query?search_query=cat:cs.CL\`)\n- **Indexing & Retrieval:** Permanent Firestore storage + BM25 & Dense vector embedding indexing.\n\n### Stored Papers in Firestore (First 20 of ${count}):\n${sampleList}`,
           taskType: taskType || "domain-expert",
           source: "arxiv-cscl-corpus-inventory",
           sentiment,
@@ -901,7 +842,7 @@ async function startServer() {
         });
       }
 
-      // 1. Query Persistent Firestore Knowledge Base across sessions (only if NOT personal/emotional crisis and NOT greeting)
+      // Query Persistent Firestore Knowledge Base
       const isGreeting = /^(?:hi|hello|hey|good\s+(?:morning|afternoon|evening)|howdy|hola|bonjour|namaste|namaskara|ನಮಸ್ಕಾರ|नमस्ते)[\s!.]*$/i.test(latestUserMessage.trim());
       let firestoreMatches: Array<{ id: string; content: string; sourceId: string; timestamp: string; score: number }> = [];
       let firestoreKnowledgeStr = "";
@@ -922,21 +863,20 @@ async function startServer() {
         }
       }
 
-      // Construct specialized system instruction according to taskType & sentiment adaptation
       let taskSystemInstruction = `You are NexaBot AI, an intelligent AI assistant with persistent cloud knowledge storage capabilities. Be helpful, concise, professional, clear, and well-structured using markdown formatting.`;
 
       if (emotionalCrisis.isPersonalCrisis) {
         taskSystemInstruction = `You are NexaBot Empathetic Support Companion. The user is going through an active emotional crisis (${emotionalCrisis.crisisType}).
 Adopt a gentle, compassionate, soothing, and deeply validating tone.
 ${emotionalCrisis.isFollowUpAdvice ? 'Provide gentle, step-by-step Day-1 emotional first aid, physical grounding, validation, and compassionate self-care advice.' : 'Acknowledge their pain with genuine empathy, validate their feelings, and offer a calm, non-judgmental listening presence.'}
-Strictly DO NOT act as a technical researcher, software troubleshooter, or academic database. DO NOT give robotic responses like "What specific details would you like to explore?". Speak from a place of human warmth and care.`;
+Strictly DO NOT act as a technical researcher, software troubleshooter, or academic database. Speak from a place of human warmth and care.`;
       } else {
         switch (taskType) {
         case "personal-assistant":
           taskSystemInstruction = "You are NexaBot Personal Assistant. Help users with productivity, task planning, schedule organization, writing, brainstorming, and everyday problem solving. Use bullet points and clear actionable advice.";
           break;
         case "sentiment-analysis":
-          taskSystemInstruction = "You are NexaBot Sentiment Analysis Engine. Analyze the provided text thoroughly. Identify: 1. Primary Sentiment (Positive, Negative, Neutral, or Mixed) with confidence score (0-100%). 2. Key Emotional Tones (e.g. Enthusiasm, Frustration, Joy). 3. Brief Analysis Breakdown explaining key phrases that contributed to this sentiment rating. 4. Strategic Response Recommendation (e.g. Empathy/De-escalation vs. Reinforcement). Format with clear Markdown headers and bullet points.";
+          taskSystemInstruction = "You are NexaBot Sentiment Analysis Engine. Analyze the provided text thoroughly. Identify: 1. Primary Sentiment (Positive, Negative, Neutral, or Mixed) with confidence score (0-100%). 2. Key Emotional Tones. 3. Brief Analysis Breakdown. 4. Strategic Response Recommendation. Format with clear Markdown headers and bullet points.";
           break;
         case "medical-qa":
           {
@@ -948,7 +888,7 @@ Strictly DO NOT act as a technical researcher, software troubleshooter, or acade
               ? `Retrieved Grounded Evidence from MedQuAD Dataset (Source: ${medData.source}, Focus: ${medData.focus}):\n${medData.selectedAnswer}`
               : "Standard MedQuAD general medical reference index.";
 
-            taskSystemInstruction = `You are NexaBot Medical Q&A Specialist, powered by the MedQuAD (Medical Question Answering Dataset from NIH/NIDDK/CDC/MedlinePlus).
+            taskSystemInstruction = `You are NexaBot Medical Q&A Specialist, powered by the MedQuAD dataset.
 ${medData.disclaimer}
 
 Context from MedQuAD Retrieval Engine:
@@ -956,17 +896,13 @@ ${medEntitiesStr}
 ${medContext}
 
 Instructions:
-1. Provide accurate, clear clinical and pharmacological explanations grounded in the MedQuAD evidence above.
-2. Structure your answer with clear markdown sections:
-   - 🩺 **Clinical Overview & Definition**
-   - 🔍 **Identified Medical Entities & Etiology**
-   - 💊 **Evidence-Based Treatments & Pharmacotherapy (from MedQuAD)**
-   - 📋 **Lifestyle & Follow-up Considerations**
+1. Provide accurate, clear clinical explanations grounded in the MedQuAD evidence above.
+2. Structure your answer with clear markdown sections.
 3. Always include the clinical safety disclaimer at the start.`;
           }
           break;
         case "document-analysis":
-          taskSystemInstruction = "You are NexaBot Document Analyzer. Analyze and extract key insights, executive summary, main findings, key entities, and actionable takeaways from the provided text or document content. Use headings, bullet lists, and clear structured breakdowns.";
+          taskSystemInstruction = "You are NexaBot Document Analyzer. Analyze and extract key insights, executive summary, main findings, key entities, and actionable takeaways from the provided text or document content.";
           break;
         case "knowledge-base":
           {
@@ -982,8 +918,7 @@ ${dynamicKnowledgeStr}
 
 Instructions:
 1. Provide factual, precise explanations grounded in the retrieved vector context above when relevant.
-2. If citing newly ingested knowledge, indicate the source or protocol title.
-3. Structure your response with clean Markdown headings, bullet points, and actionable breakdowns.`;
+2. Structure your response with clean Markdown headings and bullet points.`;
           }
           break;
         case "domain-expert":
@@ -1020,11 +955,9 @@ ${arxivRes.cited_papers.map(p => `- Title: "${p.title}" | arXiv ID: ${p.id} | Au
 Retrieved Research Aspects:
 ${arxivRes.extracted_aspects.map(e => `[arXiv:${e.paper_id}] "${e.paper_title}"\n- Problem/Motivation: ${e.problem_motivation}\n- Methodology/Approach: ${e.method_approach}\n- Findings/Contributions: ${e.key_findings_contributions}`).join("\n\n")}
 
-CRITICAL CITATION & ANTI-HALLUCINATION POLICY:
+CRITICAL CITATION POLICY:
 1. Ground your explanation EXCLUSIVELY in the retrieved arXiv cs.CL paper(s) above.
-2. You MUST cite the exact paper title, author(s), and arXiv ID (e.g. "[arXiv:1706.03762] 'Attention Is All You Need'").
-3. DO NOT invent or extrapolate ungrounded claims.
-4. If asked which paper this came from, explicitly state the arXiv ID and Title from the retrieved list above.`;
+2. You MUST cite the exact paper title, author(s), and arXiv ID.`;
           }
           break;
         default:
@@ -1035,12 +968,10 @@ CRITICAL CITATION & ANTI-HALLUCINATION POLICY:
       }
     }
 
-      // Always append persistent Firestore knowledge context across all modes
       if (firestoreKnowledgeStr) {
         taskSystemInstruction += `\n\n${firestoreKnowledgeStr}`;
       }
 
-      // Check if query is asking about a specific arXiv cs.CL paper or research topic across modes
       if (isExplicitKnowledgeIntent && taskType !== "domain-expert" && !emotionalCrisis.isPersonalCrisis && !isGreeting) {
         const csclMatches = searchCsclPapers(latestUserMessage, 2);
         if (csclMatches.length > 0 && csclMatches[0].score > 0.35) {
@@ -1051,12 +982,10 @@ CRITICAL CITATION & ANTI-HALLUCINATION POLICY:
             year: m.paper.publication_date.slice(0, 4)
           }));
           taskSystemInstruction += `\n\n[Grounded arXiv cs.CL Research Index Evidence]:\n` +
-            csclMatches.map(m => `Paper: "${m.paper.title}" [arXiv:${m.paper.id}] (${m.paper.publication_date.slice(0, 4)})\nAuthors: ${m.paper.authors.join(", ")}\nAbstract Summary:\n${m.paper.abstract}`).join("\n\n") +
-            `\n\nWhen answering questions about these papers, cite their exact arXiv ID, title, and findings.`;
+            csclMatches.map(m => `Paper: "${m.paper.title}" [arXiv:${m.paper.id}] (${m.paper.publication_date.slice(0, 4)})\nAuthors: ${m.paper.authors.join(", ")}\nAbstract Summary:\n${m.paper.abstract}`).join("\n\n");
         }
       }
 
-      // Append real-time sentiment adaptation directive to system prompt
       if (strategy.systemPromptModifier) {
         taskSystemInstruction += `\n\n${strategy.systemPromptModifier}`;
       }
@@ -1072,12 +1001,10 @@ CRITICAL CITATION & ANTI-HALLUCINATION POLICY:
         taskSystemInstruction += `\n\n[MANDATORY LANGUAGE RULE]: You MUST respond entirely and naturally in ${langName}. Every single sentence of your reply must be in ${langName}. If ${langName} is selected, do NOT use English. If Kannada is selected, respond in proper Kannada script (ಕನ್ನಡ ಲಿಪಿ). If Hindi is selected, respond in Devanagari script (देवनागरी). If French is selected, respond in French.`;
       }
       
-      // Add Visualization Capabilities Directive
-      taskSystemInstruction += `\n\n[VISUALIZATION CAPABILITY]: You HAVE the ability to render dynamic visual diagrams. If the user asks for a visualization or diagram of the 'transformer architecture', 'attention mechanism', or 'encoder-decoder structure' (or sequence-to-sequence), you MUST output exactly one of the following Markdown image syntaxes instead of an ASCII diagram or text description:
+      taskSystemInstruction += `\n\n[VISUALIZATION CAPABILITY]: You HAVE the ability to render dynamic visual diagrams. If the user asks for a visualization or diagram of the 'transformer architecture', 'attention mechanism', or 'encoder-decoder structure' (or sequence-to-sequence), you MUST output exactly one of the following Markdown image syntaxes:
 - For Transformer Architecture: ![Transformer Architecture](/images/transformer.jpg)
 - For Attention (Self-Attention): ![Attention Mechanism](/images/attention.jpg)
-- For Encoder-Decoder Sequence-to-Sequence: ![Encoder-Decoder Structure](/images/encoder_decoder.jpg)
-Do not say "I cannot render images" or use ASCII diagrams. Just output the markdown image tag and briefly explain the diagram.`;
+- For Encoder-Decoder Sequence-to-Sequence: ![Encoder-Decoder Structure](/images/encoder_decoder.jpg)`;
 
       const activeContext = getSessionContext(activeSessionId);
       if (activeContext.flightBooking && (activeContext.flightBooking.origin || activeContext.flightBooking.destination || activeContext.flightBooking.date || activeContext.flightBooking.passengers)) {
@@ -1086,22 +1013,19 @@ Do not say "I cannot render images" or use ASCII diagrams. Just output the markd
 - Destination: ${activeContext.flightBooking.destination || 'Not yet given'}
 - Date: ${activeContext.flightBooking.date || 'Not yet given'}
 - Passengers: ${activeContext.flightBooking.passengers || 'Not yet given'}
-- Booking Status: ${activeContext.flightBooking.status}
-Do NOT reset to a generic greeting if slots are already established. Continue the conversation directly from this established context.`;
+- Booking Status: ${activeContext.flightBooking.status}`;
       }
 
       const apiKey = process.env.GEMINI_API_KEY;
 
       if (apiKey && apiKey !== "MY_GEMINI_API_KEY" && apiKey.trim() !== "") {
-        // Supported models from gemini-api skill with priority and health status
         const allSupportedModels = [
-          "gemini-3.1-flash-lite", // Fast, low-latency, highly available (~1.5s)
-          "gemini-3.8-flash",      // Standard flash model
-          "gemini-flash-latest",   // General latest flash alias
-          "gemini-3.6-flash",      // Flash model
+          "gemini-2.5-flash",
+          "gemini-2.5-flash-lite",
+          "gemini-2.0-flash",
+          "gemini-1.5-flash"
         ];
 
-        // Sort candidate models by availability (models not on cooldown first)
         const now = Date.now();
         const candidateModels = [...allSupportedModels].sort((a, b) => {
           const aCooldown = (modelCooldowns.get(a) || 0) > now ? 1 : 0;
@@ -1118,18 +1042,15 @@ Do NOT reset to a generic greeting if slots are already established. Continue th
           },
         });
 
-        // Format chat history for Gemini to ensure strict alternation (starting with user)
-        // Correctly format multimodal inlineData parts for images attached to messages
         const contents: any[] = [];
         for (const m of messages) {
           const role = (m.role === "assistant" || m.role === "model") ? "model" : "user";
           if (contents.length === 0 && role === "model") {
-            continue; // Gemini requires conversation to start with a user message
+            continue;
           }
 
           const messageParts: any[] = [];
 
-          // Process image attachments for user messages
           if (role === "user" && m.attachments && Array.isArray(m.attachments)) {
             for (const att of m.attachments) {
               const rawData = att.base64Data || att.base64 || att.dataUrl || att.content || att.data || "";
@@ -1163,7 +1084,6 @@ Do NOT reset to a generic greeting if slots are already established. Continue th
           }
 
           if (contents.length > 0 && contents[contents.length - 1].role === role) {
-            // Collapse consecutive messages of the same role
             contents[contents.length - 1].parts.push(...messageParts);
           } else {
             contents.push({ role, parts: messageParts });
@@ -1171,13 +1091,11 @@ Do NOT reset to a generic greeting if slots are already established. Continue th
         }
 
         for (const modelName of candidateModels) {
-          // If model is currently on cooldown, skip unless no other options
           if ((modelCooldowns.get(modelName) || 0) > Date.now()) {
             continue;
           }
 
           try {
-            // Promise with timeout to avoid long hangs on network delays
             const generatePromise = ai.models.generateContent({
               model: modelName,
               contents: contents,
@@ -1195,11 +1113,8 @@ Do NOT reset to a generic greeting if slots are already established. Continue th
 
             let replyText = response?.text || "";
             if (replyText.trim().length > 0) {
-              // Successfully generated - clear any cooldown for this model
               modelCooldowns.delete(modelName);
 
-              // If escalation was triggered and not explicitly mentioned, append friendly escalation banner
-              // CRITICAL ISOLATION: medical-qa is strictly isolated from customer care escalation
               const isMedicalInquiry = taskType === "medical-qa" || /(pain|symptom|disease|diagnos|treatment|medquad|chest|breath|health|medical|emergency|hospital|doctor)/i.test(latestUserMessage) || replyText.includes("MEDICAL INFORMATION DISCLAIMER") || replyText.includes("medical emergency");
               
               if (taskType === "customer-service" || (!isMedicalInquiry && taskType !== "medical-qa" && strategy.shouldEscalate && !replyText.includes("Support Agent") && !replyText.includes("escalat"))) {
@@ -1218,15 +1133,13 @@ Do NOT reset to a generic greeting if slots are already established. Continue th
               });
             }
           } catch (modelError: any) {
-            const errStr = modelError?.message || String(modelError);
-            // If model is experiencing high demand (503) or rate limit (429) or timeout, place on cooldown
-            modelCooldowns.set(modelName, Date.now() + 60000); // 60s cooldown
+            modelCooldowns.set(modelName, Date.now() + 60000);
             console.log(`[Gemini Router] Model ${modelName} unavailable, falling back to next candidate...`);
           }
         }
       }
 
-      // Smart Fallback Assistant Logic if API key is not configured or all candidate models are temporarily unavailable
+      // Smart Fallback Assistant Logic
       const fallbackReply = generateFallbackResponse(latestUserMessage, taskType, sentimentAnalysis, firestoreMatches, language, activeSessionId, messages);
       return res.json({ 
         reply: fallbackReply, 
@@ -1245,12 +1158,10 @@ Do NOT reset to a generic greeting if slots are already established. Continue th
     }
   });
 
-  // Catch-all for undefined /api/* routes so they always return JSON instead of SPA HTML
   app.all("/api/*", (req, res) => {
     res.status(404).json({ error: `API endpoint '${req.method} ${req.path}' not found.` });
   });
 
-  // Global API error handler
   app.use("/api", (err: any, req: any, res: any, next: any) => {
     console.error("Uncaught API route error:", err);
     if (!res.headersSent) {
@@ -1275,12 +1186,10 @@ Do NOT reset to a generic greeting if slots are already established. Continue th
 
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`NexaBot AI Server running on http://0.0.0.0:${PORT}`);
-    // Asynchronously seed arXiv cs.CL papers into Firestore and Vector DB
     seedArxivCsclToFirestoreAndVectors()
       .then(res => console.log(`[arXiv cs.CL] Initialized and verified ${res.seededCount} cs.CL papers in knowledge base.`))
       .catch(err => console.warn(`[arXiv cs.CL] Startup seeding warning:`, err));
 
-    // Fetch and ingest 60 live papers from arXiv public API directly to Firestore
     fetchAndIngestLiveArxivPapers(60)
       .then(res => console.log(`[arXiv Public API] Successfully fetched and committed ${res.totalIngested} live papers to Firestore "knowledge_base" collection.`))
       .catch(err => console.warn(`[arXiv Public API] Startup live ingestion notice:`, err?.message || err));
@@ -1303,7 +1212,6 @@ function generateFallbackResponse(
   const session = getSessionContext(sessionId || 'fallback_session');
   const activeCrisis = session.activeCrisis || (sessionId ? getActiveSessionCrisis(sessionId) : null);
 
-  // 1. Personal Emotional Crisis (Breakup, Grief, Sadness, Loneliness) - Prioritize empathetic support FIRST
   const emotionalCrisis = detectEmotionalCrisis(userPrompt, {
     messages,
     activeCrisis
@@ -1332,8 +1240,16 @@ function generateFallbackResponse(
     }
   }
 
-  // If there are retrieved facts from Firestore, always incorporate them directly into the response
-  if (firestoreMatches && firestoreMatches.length > 0) {
+  // Greeting and identity questions
+  if (p.includes("who are you") || p.includes("what can you do") || p.includes("introduce yourself") || p.includes("help me") || /^(?:hi|hello|hey|good\s+(?:morning|afternoon|evening))/i.test(p)) {
+    return `Hello! I am **NexaBot AI**, an intelligent multi-task AI assistant. Here is what I can do for you:\n\n- 💬 **Interactive Chat & Assistance:** Answering questions, writing, and problem-solving.\n- 🔍 **Domain Research & arXiv (cs.CL):** Searching and summarizing research papers.\n- 🏥 **Medical Q&A:** Clinical guidance using the MedQuAD dataset.\n- 📊 **Sentiment Analysis:** Real-time emotion and sentiment detection.\n- 🌐 **Multilingual Support:** English, Hindi, Kannada, and French.\n- 🖼️ **Multimodal Understanding:** Analyzing and answering questions about images.\n\nHow can I help you today?`;
+  }
+
+  // Only return knowledge base papers if the user specifically asked for research papers or knowledge
+  const isKnowledgeQuery = taskType === "knowledge-base" || taskType === "domain-expert" || 
+    /(?:paper|arxiv|dataset|cs\.cl|research|study|abstract|stored fact)/i.test(p);
+
+  if (isKnowledgeQuery && firestoreMatches && firestoreMatches.length > 0) {
     const primaryMatch = firestoreMatches[0];
     const otherMatches = firestoreMatches.slice(1);
     
@@ -1352,12 +1268,10 @@ function generateFallbackResponse(
     return turnResult.reply;
   }
 
-  // If user language is Kannada, Hindi, or French, use the engine's localized response
   if (turnResult.language === 'kn' || turnResult.language === 'hi' || turnResult.language === 'fr') {
     return turnResult.reply;
   }
 
-  // Strict isolation for Medical Q&A: process clinical answers immediately before any sentiment interception
   if (taskType === "medical-qa" || p.includes("medquad") || (p.includes("symptom") && (p.includes("disease") || p.includes("diagnos") || p.includes("treatment")))) {
     const medResp = processMedicalQA(userPrompt);
     return `${medResp.disclaimer}\n\n### Medical Q&A Reference\n\n${medResp.selectedAnswer}`;
@@ -1386,7 +1300,6 @@ function generateFallbackResponse(
     return `### Document Analysis Summary\n\n- **Core Subject:** ${userPrompt}\n- **Summary:** The provided text outlines key operational concepts and structured insights. Let me know if you need specific section extraction or deep analysis.`;
   }
 
-  // Check Vector Database for relevant stored facts
   const vectorMatches = searchVectorDatabase(userPrompt, 3, 0.15);
   if (vectorMatches.length > 0) {
     const topMatch = vectorMatches[0];
@@ -1410,7 +1323,6 @@ function generateFallbackResponse(
     return `Here is the technical approach and solution for **"${userPrompt}"**:\n\n\`\`\`python\n# Solution approach\ndef analyze():\n    print("Executing request analysis...")\nanalyze()\n\`\`\`\n\nLet me know if you need any adjustments or additional test cases.`;
   }
 
-  // Natural conversational response without robotic boilerplate
   return `I'm here to help and listen. How can I best assist you with this?`;
 }
 
